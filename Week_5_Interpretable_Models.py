@@ -21,14 +21,13 @@ def _():
 
 @app.cell
 def _():
-    import pandas as pd
     import numpy as np
     from sklearn.model_selection import train_test_split
-    from sklearn.tree import DecisionTreeClassifier, plot_tree, export_text
+    from sklearn.tree import DecisionTreeClassifier, plot_tree
     from sklearn.linear_model import LinearRegression, LogisticRegression
-    from sklearn.metrics import accuracy_score, classification_report
-    import matplotlib.pyplot as plt
+    from sklearn.metrics import accuracy_score
     import seaborn as sns
+    import matplotlib.pyplot as plt
 
     return (
         DecisionTreeClassifier,
@@ -37,6 +36,7 @@ def _():
         accuracy_score,
         np,
         plot_tree,
+        plt,
         sns,
         train_test_split,
     )
@@ -258,15 +258,12 @@ def _(
     lin_accuracy,
     lr_accuracy,
     lr_model,
+    np,
     plot_tree,
+    plt,
+    sns,
 ):
     def _():
-
-        import pandas as pd
-        import numpy as np
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        from sklearn.inspection import PartialDependenceDisplay
 
         # Set modern styling
         sns.set_style("white")
