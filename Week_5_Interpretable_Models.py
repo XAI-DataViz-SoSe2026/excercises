@@ -35,6 +35,7 @@ def _():
         LinearRegression,
         LogisticRegression,
         accuracy_score,
+        np,
         plot_tree,
         sns,
         train_test_split,
@@ -140,9 +141,10 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell
+def _(np, titanic):
     def gini_impurity(y):
+        """Calculate Gini impurity for a binary classification node."""
         if len(y) == 0:
             return 0
         p1 = np.sum(y == 1) / len(y)
@@ -150,70 +152,48 @@ app._unparsable_cell(
         return 1 - (p0**2 + p1**2)
 
     def information_gain(y, y_left, y_right):
+        """Calculate information gain from a split."""
         n = len(y)
         n_left, n_right = len(y_left), len(y_right)
+
         if n_left == 0 or n_right == 0:
             return 0
+
         parent_gini = gini_impurity(y)
         child_gini = (n_left / n) * gini_impurity(y_left) + (n_right / n) * gini_impurity(y_right)
+
         return parent_gini - child_gini
 
     def find_best_split(X, y):
+        """Find the best feature and threshold for splitting."""
         best_gain = -1
         best_feature = None
         best_threshold = None
-        for feature in X.columns:
-            thresholds = np.uniquedef gini_impurity(y):
-        if len(y) == 0:
-            return 0
-        p1 = np.sum(y == 1) / len(y)
-        p0 = 1 - p1
-        return 1 - (p0**2 + p1**2)
 
-    def information_gain(y, y_left, y_right):
-        n = len(y)
-        n_left, n_right = len(y_left), len(y_right)
-        if n_left == 0 or n_right == 0:
-            return 0
-        parent_gini = gini_impurity(y)
-        child_gini = (n_left / n) * gini_impurity(y_left) + (n_right / n) * gini_impurity(y_right)
-        return parent_gini - child_gini
-
-    def find_best_split(X, y):
-        best_gain = -1
-        best_feature = None
-        best_threshold = None
         for feature in X.columns:
             thresholds = np.unique(X[feature])
             for threshold in thresholds:
                 left_mask = X[feature] <= threshold
                 right_mask = ~left_mask
+
                 gain = information_gain(y, y[left_mask], y[right_mask])
+
                 if gain > best_gain:
                     best_gain = gain
                     best_feature = feature
                     best_threshold = threshold
+
         return best_feature, best_threshold, best_gain
 
-    # Example on training set
-    feature, threshold, gain = find_best_split(X_train, y_train)
-    print(f"Best split: {feature} <= {threshold:.2f}, Gain: {gain:.4f}")(X[feature])
-            for threshold in thresholds:
-                left_mask = X[feature] <= threshold
-                right_mask = ~left_mask
-                gain = information_gain(y, y[left_mask], y[right_mask])
-                if gain > best_gain:
-                    best_gain = gain
-                    best_feature = feature
-                    best_threshold = threshold
-        return best_feature, best_threshold, best_gain
+    # Test on first 10 rows (matching manual calculation)
+    first_10 = titanic.head(10)
+    X_10 = first_10[['age', 'sex', 'pclass']]
+    y_10 = first_10['survived']
 
-    # Example on training set
-    feature, threshold, gain = find_best_split(X_train, y_train)
-    print(f"Best split: {feature} <= {threshold:.2f}, Gain: {gain:.4f}")
-    """,
-    name="_"
-)
+    feature, threshold, gain = find_best_split(X_10, y_10)
+    print(f"Best split on first 10 rows: {feature} <= {threshold:.2f}")
+    print(f"Information Gain: {gain:.4f}")
+    return
 
 
 @app.cell(hide_code=True)
@@ -281,7 +261,7 @@ def _(
     plot_tree,
 ):
     def _():
-    
+
         import pandas as pd
         import numpy as np
         import matplotlib.pyplot as plt
